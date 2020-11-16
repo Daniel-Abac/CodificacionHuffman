@@ -7,7 +7,7 @@ package codificacionhuffman;
 
 /**
  *
- * @author Daniel
+ * @author alehe
  */
 public class Nodo {
     private char caracter;

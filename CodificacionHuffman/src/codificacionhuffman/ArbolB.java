@@ -7,7 +7,7 @@ package codificacionhuffman;
 
 /**
  *
- * @author Daniel
+ * @author alehe
  */
 public class ArbolB {
     private Nodo raiz, nodo_aux;

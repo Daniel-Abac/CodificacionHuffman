@@ -25,7 +25,7 @@ public class Principal extends javax.swing.JFrame {
         initComponents();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle("Compresion De Datos");
+        setTitle("Huffman (Daniel y Diego)");
         //Imagen img1 = new Imagen("/Imagenes/fondo1.jfif", 670, 810);
         
     }
@@ -53,6 +53,7 @@ public class Principal extends javax.swing.JFrame {
         Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Huffman (Daniel y Diego)");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabelCompresion.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
@@ -117,6 +118,7 @@ public class Principal extends javax.swing.JFrame {
         });
         getContentPane().add(Descomprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 230, 60, 70));
 
+        Fondo.setForeground(new java.awt.Color(255, 255, 255));
         Fondo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Fondo9.jpeg"))); // NOI18N
         getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 830, 580));

@@ -27,63 +27,58 @@ public class Huffman {
         this.cadena_binaria = "";
         this.cadena_tabla = "";
     }
-     
-    public void ClaveBinario(){
-        char caracter;
-        Nodo nodo_aux;
-        for(int i=0; i<cadena.length(); i++){
-            caracter = cadena.charAt(i);
-            nodo_aux = arbol.Buscar(caracter);
-            cadena_binaria+=nodo_aux.getClave();
-        }   
-    }
     
-    public void ClavesParaLetras(){
-        CrearListaFrecuencias(cadena); //se crea una lista para tener cada letra para evaluarla en el arbol
-        Nodo nodo_actual = lista.getTope();
-        String clave;
-        char caracter;
-        String cadena1;
-        while(nodo_actual!=null){// se recorre la lista 
-            caracter = nodo_actual.getCaracter(); // se obtiene el caracter del nodo actual
-            Nodo nodo_caracter = arbol.Buscar(caracter);// se obtiene el nodo del caracter actual
-            clave = RecorridoAscendente(nodo_caracter);// se obtiene la clave recorriendo el arbol desde el nodo_caracter hasta la raiz 
-            clave = RotarClave(clave); // se rota la clave
-            nodo_caracter.setClave(clave);// la clave se agrega al nodo que tiene el caracter 
-            nodo_actual.setClave(clave);
-            nodo_actual = nodo_actual.getSiguiente();
+    //Paso 1 
+     //lee un archivo txt y retorna lo que tenga el archivo en una cadean un string        
+    public String LeerArchivo(String direccion){
+        String cadena_aux = "";
+        File archivo;
+        FileReader fr;
+        BufferedReader br;
+        
+        try {
+            archivo = new File(direccion);
+            fr = new FileReader(archivo);
+            br = new BufferedReader(fr);
+            String linea;
+            while((linea=br.readLine())!=null){
+                cadena_aux+=linea;
+            }
+           
+        } catch (Exception e) {   
         }
-        HacerTabla(); 
+        return cadena_aux;
     }
     
-    private void HacerTabla(){
-        Nodo nodo_aux = lista.getTope();
-        while(nodo_aux!=null){
-            cadena_tabla+=nodo_aux.getClave()+nodo_aux.getCaracter();
-            nodo_aux = nodo_aux.getSiguiente();
+    //Paso 2 
+    //Se crea la lista con los nodos que contienen cada caracter con su frecuencia y que estan de forma ordenada de menor a mayor 
+    public void CrearListaFrecuencias(String cadena){
+        this.cadena = cadena;
+        lista = new Lista();//va a contener cada caracter de la cadena con el numero de veces que se repite 
+        char caracter_actual;
+        int frecuencia;
+        for(int i=0; i<cadena.length();i++){
+            caracter_actual = cadena.charAt(i); //extrae el caracter
+            frecuencia = FrecuenciaCaracter(caracter_actual, cadena);//busca cuantas veces se repite 
+            
+            Nodo nuevo_nodo = new Nodo(); // se crea un nuevo nodo
+            nuevo_nodo.setCaracter(caracter_actual);// se inserta en el nuevo nodo el caracter
+            nuevo_nodo.setFrecuencia(frecuencia);// se ingresa en el nuevo nodo la fercuencia del caracter 
+            
+            if(lista.getTope() == null){ // esta primera condicion es cuando la lista esta vacia 
+                lista.Insertar(nuevo_nodo);//lo inserta en la lista 
+            }
+            else{
+                if(!lista.Buscar(caracter_actual)){//si el caracter no esta en la lista lo insertamos 
+                    lista.Insertar(nuevo_nodo);// se inserta en la lista 
+                }
+                //si el caracter ya esta en la lista ya no se inserta
+            }
         }
-    }
+    } 
     
-    private String RotarClave(String clave){
-        String clave_rotada="";
-        for(int i=clave.length()-1;i>=0; i--){
-            clave_rotada+=clave.charAt(i);
-        }
-        return clave_rotada;
-    }
-    
-    private String RecorridoAscendente(Nodo nodo){
-        String cadena = "";
-        Nodo nodo_padre = nodo.getPadre();
-        int lado = nodo.getLado();
-        char caracter = nodo.getCaracter();
-        while(nodo.getPadre()!= null){
-            cadena += nodo.getLado();
-            nodo = nodo.getPadre();
-        }
-        return cadena;
-    }
-    
+    //Paso 3
+    //Crea el arbol que tiene nodos que contienen cada caracter con su debida frecuencia 
     public void CrearArbol(){
         if(lista.getSize()>1){
         Lista lista_aux = new Lista();//creamos una lista auxiliar 
@@ -120,94 +115,64 @@ public class Huffman {
         }
     }
     
-    //hacemos una nueva lista con los nodos que le siguen a los dos primeros que agarramos para formar los seudo arboles
-    private void NuevaLista(Lista lista_aux,Nodo nodo_conti){
-      while(nodo_conti!=null){
-          Nodo nuevo_nodo = new Nodo();
-          nuevo_nodo.setCaracter(nodo_conti.getCaracter());
-          nuevo_nodo.setFrecuencia(nodo_conti.getFrecuencia());
-          Nodo hijo_izq = nodo_conti.getHijoizq(), hijo_der = nodo_conti.getHijoder();        
-          nuevo_nodo.setHijoder(hijo_der);
-          nuevo_nodo.setHijoizq(hijo_izq);
-             
-          lista_aux.Insertar(nuevo_nodo);
-          nodo_conti = nodo_conti.getSiguiente();
-         }
-         lista = lista_aux;
+    //Paso 4
+    //Encontrar Claves de:
+    public void ClavesParaLetras(){
+        CrearListaFrecuencias(cadena); //se crea una lista para tener cada letra para evaluarla en el arbol
+        Nodo nodo_actual = lista.getTope();
+        String clave;
+        char caracter;
+        String cadena1;
+        while(nodo_actual!=null){// se recorre la lista 
+            caracter = nodo_actual.getCaracter(); // se obtiene el caracter del nodo actual
+            Nodo nodo_caracter = arbol.Buscar(caracter);// se obtiene el nodo del caracter actual
+            clave = RecorridoAscendente(nodo_caracter);// se obtiene la clave recorriendo el arbol desde el nodo_caracter hasta la raiz 
+            clave = RotarClave(clave); // se rota la clave
+            nodo_caracter.setClave(clave);// la clave se agrega al nodo que tiene el caracter 
+            nodo_actual.setClave(clave);
+            nodo_actual = nodo_actual.getSiguiente();
+        }
+        HacerTabla(); 
     }
-    
-    //***Paso 2 
-    //Se crea la lista con los nodos que contienen cada caracter con su frecuencia y que estan de forma ordenada de menor a mayor 
-    public void CrearListaFrecuencias(String cadena){
-        this.cadena = cadena;
-        lista = new Lista();//va a contener cada caracter de la cadena con el numero de veces que se repite 
-        char caracter_actual;
-        int frecuencia;
-        for(int i=0; i<cadena.length();i++){
-            caracter_actual = cadena.charAt(i); //extrae el caracter
-            frecuencia = FrecuenciaCaracter(caracter_actual, cadena);//busca cuantas veces se repite 
-            
-            Nodo nuevo_nodo = new Nodo(); // se crea un nuevo nodo
-            nuevo_nodo.setCaracter(caracter_actual);// se inserta en el nuevo nodo el caracter
-            nuevo_nodo.setFrecuencia(frecuencia);// se ingresa en el nuevo nodo la fercuencia del caracter 
-            
-            if(lista.getTope() == null){ // esta primera condicion es cuando la lista esta vacia 
-                lista.Insertar(nuevo_nodo);//lo inserta en la lista 
-            }
-            else{
-                if(!lista.Buscar(caracter_actual)){//si el caracter no esta en la lista lo insertamos 
-                    lista.Insertar(nuevo_nodo);// se inserta en la lista 
-                }
-                //si el caracter ya esta en la lista ya no se inserta
-            }
+    private void HacerTabla(){
+        Nodo nodo_aux = lista.getTope();
+        while(nodo_aux!=null){
+            cadena_tabla+=nodo_aux.getClave()+nodo_aux.getCaracter();
+            nodo_aux = nodo_aux.getSiguiente();
         }
     }
-    
-    // ve cuantas veces se repite un caracter en una cadena
-    private int FrecuenciaCaracter(char caracter, String cadena){
-        int frecuencia = 0;
-        for(int i=0; i<cadena.length();i++){
-            if(caracter == cadena.charAt(i)){
-                frecuencia++;
-            }
+    private String RotarClave(String clave){
+        String clave_rotada="";
+        for(int i=clave.length()-1;i>=0; i--){
+            clave_rotada+=clave.charAt(i);
         }
-        return frecuencia;
+        return clave_rotada;
+    }
+    private String RecorridoAscendente(Nodo nodo){
+        String cadena = "";
+        Nodo nodo_padre = nodo.getPadre();
+        int lado = nodo.getLado();
+        char caracter = nodo.getCaracter();
+        while(nodo.getPadre()!= null){
+            cadena += nodo.getLado();
+            nodo = nodo.getPadre();
+        }
+        return cadena;
     }
     
-    //***Paso 1 
-     //lee un archi txt y retorna lo que tenga el archivo en una cadean un string        
-    public String LeerArchivo(String direccion){
-        String cadena_aux = "";
-        File archivo;
-        FileReader fr;
-        BufferedReader br;
-        
-        try {
-            archivo = new File(direccion);
-            fr = new FileReader(archivo);
-            br = new BufferedReader(fr);
-            String linea;
-            while((linea=br.readLine())!=null){
-                cadena_aux+=linea;
-            }
-           
-        } catch (Exception e) {   
-        }
-        return cadena_aux;
+    //Paso 5
+    //Crear cifrado Binario
+    public void ClaveBinario(){
+        char caracter;
+        Nodo nodo_aux;
+        for(int i=0; i<cadena.length(); i++){
+            caracter = cadena.charAt(i);
+            nodo_aux = arbol.Buscar(caracter);
+            cadena_binaria+=nodo_aux.getClave();
+        }   
     }
     
-    public int BinarioAEntero(String binario){
-        int entero = 0, potencia = 0;
-        for(int i=binario.length()-1; i>=0 ;i--){
-            if(binario.charAt(i) == '1'){
-                entero += (int) Math.pow(2,potencia); 
-            }
-            potencia++;
-        }
-        return entero;
-    }
-    
-    //*** Paso 6
+    //Paso 6
     //se pasa a codigo ascii la cadena binaria de la cadena 
     public void BinarioAascii(String cadena_binario){
         cadena_ascii_entero = "";
@@ -261,8 +226,48 @@ public class Huffman {
         cadena_tabla+=ceros_inicio;
         cadenaAscii = cadena_ascii; 
     }
+     
     
-    //cuaenta el numero de cero al inicio de la cadena hasta que encuentra un 1
+    
+    //hacemos una nueva lista con los nodos que le siguen a los dos primeros que agarramos para formar los seudo arboles
+    private void NuevaLista(Lista lista_aux,Nodo nodo_conti){
+      while(nodo_conti!=null){
+          Nodo nuevo_nodo = new Nodo();
+          nuevo_nodo.setCaracter(nodo_conti.getCaracter());
+          nuevo_nodo.setFrecuencia(nodo_conti.getFrecuencia());
+          Nodo hijo_izq = nodo_conti.getHijoizq(), hijo_der = nodo_conti.getHijoder();        
+          nuevo_nodo.setHijoder(hijo_der);
+          nuevo_nodo.setHijoizq(hijo_izq);
+             
+          lista_aux.Insertar(nuevo_nodo);
+          nodo_conti = nodo_conti.getSiguiente();
+         }
+         lista = lista_aux;
+    }
+
+    // ve cuantas veces se repite un caracter en una cadena
+    private int FrecuenciaCaracter(char caracter, String cadena){
+        int frecuencia = 0;
+        for(int i=0; i<cadena.length();i++){
+            if(caracter == cadena.charAt(i)){
+                frecuencia++;
+            }
+        }
+        return frecuencia;
+    }
+     
+    public int BinarioAEntero(String binario){
+        int entero = 0, potencia = 0;
+        for(int i=binario.length()-1; i>=0 ;i--){
+            if(binario.charAt(i) == '1'){
+                entero += (int) Math.pow(2,potencia); 
+            }
+            potencia++;
+        }
+        return entero;
+    }
+    
+  //cuenta el numero de cero al inicio de la cadena hasta que encuentra un 1
     public int NumeroCeroIzq(String cadena_binaria){
         int contador = 0, resul;
         for(int i=0; i<cadena_binaria.length(); i++){
